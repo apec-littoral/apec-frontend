@@ -10,7 +10,7 @@ function displayDate(value) {
     : 'Sans échéance';
 }
 
-export function buildCardDocument(member, qrUrl, photoUrl) {
+export function buildCardDocument(member, qrUrl, photoUrl, logoUrl = '') {
   const valid = member.active && (!member.expires_on || member.expires_on >= new Date().toLocaleDateString('sv-SE', { timeZone: 'Africa/Porto-Novo' }));
   const initials = `${member.first_name?.[0] || ''}${member.last_name?.[0] || ''}`;
   const portrait = photoUrl
@@ -32,7 +32,7 @@ export function buildCardDocument(member, qrUrl, photoUrl) {
 .card{position:relative;width:100%;aspect-ratio:1.586;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 14px 35px #173c6020;border:1px solid #d5e0e8}
 .front{background:radial-gradient(ellipse at 88% 14%,#e9f3f9 0 16%,transparent 16.3%),linear-gradient(145deg,#fff 0 61%,#f6fbfd 61%)}
 .front-top{height:23%;display:flex;align-items:center;padding:0 5%;gap:12px;position:relative;z-index:2}
-.logo-mark{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(155deg,#e5f6ff,#c8edf9);border:2px solid #72bce3;color:#1685bb;font-size:24px}
+.logo-mark{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(155deg,#e5f6ff,#c8edf9);border:2px solid #72bce3;color:#1685bb;font-size:24px}.logo-mark[src]{object-fit:contain;background:#fff;padding:1px}
 .brand{font-size:20px;font-weight:900;letter-spacing:.04em;color:#1877b8}.brand small{display:block;font-size:9px;letter-spacing:.09em;color:#278b70;margin-top:3px}
 .top-tag{margin-left:auto;padding:7px 12px;border-radius:18px;background:#e8f4fb;color:#2579ac;font-size:9px;font-weight:800;letter-spacing:.08em}
 .identity{position:relative;z-index:2;display:flex;align-items:center;gap:18px;padding:2px 5% 0}
@@ -67,7 +67,7 @@ export function buildCardDocument(member, qrUrl, photoUrl) {
 </style></head><body>
 <header class="toolbar"><span>Carte APEC · Recto et verso · format bancaire</span><button onclick="window.print()">Imprimer / Enregistrer en PDF</button></header>
 <main class="cards">
-  <article class="card front"><div class="front-top"><span class="logo-mark">💧</span><div class="brand">APEC BÉNIN<small>EAU CONDITIONNÉE · ADHÉSION</small></div><span class="top-tag">MEMBRE OFFICIEL</span></div>
+  <article class="card front"><div class="front-top"><img class="logo-mark" src="${logoUrl}" alt="Logo APEC-LIT"><div class="brand">APEC BÉNIN<small>EAU CONDITIONNÉE · ADHÉSION</small></div><span class="top-tag">MEMBRE OFFICIEL</span></div>
     <div class="identity">${portrait}<div><div class="member-role">Carte de membre</div><div class="name">${escapeHtml(member.first_name)} ${escapeHtml(member.last_name)}</div><div class="company">${escapeHtml(member.company)}</div></div></div>
     <div class="contact-box">${contact}</div><div class="front-footer"><div class="member-no"><small>NUMÉRO D’ADHÉRENT</small><b>${escapeHtml(member.membership_number)}</b></div><div class="validity"><small>VALIDITÉ JUSQU’AU</small><b>${displayDate(member.expires_on)}</b></div></div><div class="wave wave-blue"></div><div class="wave wave-green"></div>
   </article>

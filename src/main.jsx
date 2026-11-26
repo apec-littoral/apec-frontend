@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Activity, ArrowLeft, BadgeCheck, Building2, CalendarDays, Check, ChevronRight, Droplets, LogOut, Plus, Printer, QrCode, Search, ShieldCheck, Trash2, UserRound, X } from 'lucide-react';
+import { Activity, ArrowLeft, BadgeCheck, Building2, CalendarDays, Check, ChevronRight, LogOut, Moon, Plus, Printer, QrCode, Search, ShieldCheck, Sun, Trash2, UserRound, X } from 'lucide-react';
 import './style.css';
 import './memberExtras.css';
 import { buildCardDocument } from './memberCard.js';
@@ -10,11 +10,34 @@ const emptyMember = { first_name: '', last_name: '', membership_number: '', comp
 
 function App() {
   const token = window.location.pathname.match(/^\/verify\/([^/]+)\/?$/)?.[1];
-  if (token) return <Verification token={decodeURIComponent(token)} />;
-  return <Admin />;
+  const [theme, setTheme] = useState(() => {
+    const saved = window.localStorage.getItem('apec-theme');
+    return saved || (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  });
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem('apec-theme', theme);
+  }, [theme]);
+  const toggleTheme = () => setTheme(current => current === 'dark' ? 'light' : 'dark');
+  if (token) return <Verification token={decodeURIComponent(token)} theme={theme} toggleTheme={toggleTheme} />;
+  return <Admin theme={theme} toggleTheme={toggleTheme} />;
 }
 
-function Verification({ token }) {
+function Brand({ subtitle, className = '' }) {
+  return <div className={`brand-lock ${className}`}>
+    <img className="brand-logo" src="/logo-apec.png" alt="Logo APEC-LIT" />
+    <div><b>APEC-LIT</b><small>{subtitle}</small></div>
+  </div>;
+}
+
+function ThemeToggle({ theme, toggleTheme, className = '' }) {
+  const dark = theme === 'dark';
+  return <button type="button" className={`theme-toggle ${className}`} onClick={toggleTheme} aria-label={dark ? 'Activer le mode clair' : 'Activer le mode sombre'} title={dark ? 'Mode clair' : 'Mode sombre'}>
+    {dark ? <Sun size={16} /> : <Moon size={16} />}<span>{dark ? 'Mode clair' : 'Mode sombre'}</span>
+  </button>;
+}
+
+function Verification({ token, theme, toggleTheme }) {
   const [member, setMember] = useState(null);
   const [error, setError] = useState(false);
   useEffect(() => {
@@ -25,7 +48,7 @@ function Verification({ token }) {
   }, [token]);
   const valid = member?.active;
   return <main className="verify-shell">
-    <div className="verify-brand"><span className="brand-mark"><Droplets size={22}/></span><div><b>APEC BÉNIN</b><small>Association des promoteurs d'eau conditionnée</small></div></div>
+    <div className="verify-top"><Brand className="verify-brand" subtitle="Association des promoteurs d'eau conditionnée"/><ThemeToggle theme={theme} toggleTheme={toggleTheme}/></div>
     <section className="verify-card">
       <div className={`verify-icon ${error ? 'invalid' : member ? valid ? 'valid' : 'invalid' : ''}`}>{error ? <X/> : member ? valid ? <BadgeCheck/> : <X/> : <span className="loader"/>}</div>
       <p className="eyebrow">VÉRIFICATION DE CARTE</p>
@@ -36,7 +59,7 @@ function Verification({ token }) {
   </main>;
 }
 
-function Admin() {
+function Admin({ theme, toggleTheme }) {
   const [credentials, setCredentials] = useState(null);
   const [login, setLogin] = useState({ username: '', password: '' });
   const [loginError, setLoginError] = useState('');
@@ -97,19 +120,19 @@ function Admin() {
       }
       const popup = window.open('', '_blank', 'width=900,height=620');
       if (!popup) { URL.revokeObjectURL(qr); if (photo) URL.revokeObjectURL(photo); throw new Error('Autorisez les fenêtres contextuelles pour imprimer la carte.'); }
-      popup.document.write(buildCardDocument(member, qr, photo));
+      popup.document.write(buildCardDocument(member, qr, photo, `${window.location.origin}/logo-apec.png`));
       popup.document.close();
       setTimeout(() => { URL.revokeObjectURL(qr); if (photo) URL.revokeObjectURL(photo); }, 60000);
     } catch (e) { setNotice(e.message); }
   }
 
   const filtered = members.filter(m => `${m.first_name} ${m.last_name} ${m.company} ${m.membership_number}`.toLowerCase().includes(query.toLowerCase())).filter(m => filter === 'Tous' || (filter === 'Actifs' ? m.active && (!m.expires_on || m.expires_on >= today()) : !m.active || (m.expires_on && m.expires_on < today())));
-  if (!credentials) return <main className="login-layout"><div className="login-art"><div className="art-glow"/><div className="brand-lock"><span className="brand-mark"><Droplets size={22}/></span><div><b>APEC BÉNIN</b><small>Association des promoteurs d'eau conditionnée</small></div></div><div className="art-copy"><p className="eyebrow">ESPACE ASSOCIATION</p><h1>Les adhésions,<br/>en toute clarté.</h1><p>Gérez les membres et vérifiez leurs cartes depuis un espace unique.</p></div><div className="art-bottom">PLATEFORME DE GESTION DES MEMBRES <span>·</span> BÉNIN</div></div><section className="login-panel"><div className="login-box"><div className="mobile-brand"><span className="brand-mark"><Droplets size={20}/></span><b>APEC BÉNIN</b></div><div className="eyebrow">BON RETOUR</div><h2>Connexion</h2><p className="muted">Connectez-vous à l'espace de gestion de l'association.</p><form onSubmit={signIn} className="login-form"><label>Nom d'utilisateur<input autoComplete="username" value={login.username} onChange={e=>setLogin({...login,username:e.target.value})} required placeholder="Votre identifiant"/></label><label>Mot de passe<input type="password" autoComplete="current-password" value={login.password} onChange={e=>setLogin({...login,password:e.target.value})} required placeholder="Votre mot de passe"/></label>{loginError && <div className="form-error">{loginError}</div>}<button className="button primary full">Accéder à mon espace <ChevronRight size={16}/></button></form><div className="secure-note"><ShieldCheck size={15}/> Accès réservé aux responsables de l'association</div></div><footer className="login-footer">APEC Bénin · Portail des adhésions</footer></section></main>;
+  if (!credentials) return <main className="login-layout"><div className="login-art"><div className="art-glow"/><div className="brand-lock"><img className="brand-logo" src="/logo-apec.png" alt="Logo APEC-LIT"/><div><b>APEC BÉNIN</b><small>Association des promoteurs d'eau conditionnée</small></div></div><div className="art-copy"><p className="eyebrow">ESPACE ASSOCIATION</p><h1>Les adhésions,<br/>en toute clarté.</h1><p>Gérez les membres et vérifiez leurs cartes depuis un espace unique.</p></div><div className="art-bottom">PLATEFORME DE GESTION DES MEMBRES <span>·</span> BÉNIN</div></div><section className="login-panel"><ThemeToggle theme={theme} toggleTheme={toggleTheme} className="login-theme-toggle"/><div className="login-box"><Brand className="mobile-brand" subtitle="Portail adhérents"/><div className="eyebrow">BON RETOUR</div><h2>Connexion</h2><p className="muted">Connectez-vous à l'espace de gestion de l'association.</p><form onSubmit={signIn} className="login-form"><label>Nom d'utilisateur<input autoComplete="username" value={login.username} onChange={e=>setLogin({...login,username:e.target.value})} required placeholder="Votre identifiant"/></label><label>Mot de passe<input type="password" autoComplete="current-password" value={login.password} onChange={e=>setLogin({...login,password:e.target.value})} required placeholder="Votre mot de passe"/></label>{loginError && <div className="form-error">{loginError}</div>}<button className="button primary full">Accéder à mon espace <ChevronRight size={16}/></button></form><div className="secure-note"><ShieldCheck size={15}/> Accès réservé aux responsables de l'association</div></div><footer className="login-footer">APEC Bénin · Portail des adhésions</footer></section></main>;
 
   const activeCount = members.filter(m => m.active && (!m.expires_on || m.expires_on >= today())).length;
   const inactiveCount = members.length - activeCount;
-  return <div className="app-shell"><aside className="sidebar"><div className="brand-lock"><span className="brand-mark"><Droplets size={22}/></span><div><b>APEC BÉNIN</b><small>Portail adhérents</small></div></div><div className="nav-caption">GESTION</div><div className="nav-item selected"><UserRound size={17}/> Membres <span className="nav-count">{members.length}</span></div><div className="sidebar-bottom"><div className="user-mini"><div className="user-avatar">{credentials.username.slice(0,1).toUpperCase()}</div><div><b>{credentials.username}</b><small>Administrateur</small></div><button className="icon-button logout" title="Déconnexion" onClick={()=>{setCredentials(null);setMembers([]);}}><LogOut size={17}/></button></div><div className="sidebar-foot">Association des promoteurs<br/>d'eau conditionnée du Bénin</div></div></aside>
-    <main className="main-area"><header className="topbar"><div className="breadcrumb">Espace association <ChevronRight size={14}/> <b>Membres</b></div><div className="secure-pill"><span/> Espace sécurisé</div></header><section className="content"><div className="page-heading"><div><div className="eyebrow">VOTRE ASSOCIATION</div><h1>Gestion des membres</h1><p>Gérez les adhésions et éditez les cartes de membre.</p></div><button className="button primary" onClick={()=>setEditing({ ...emptyMember })}><Plus size={17}/> Ajouter un membre</button></div>
+  return <div className="app-shell"><aside className="sidebar"><div className="brand-lock"><img className="brand-logo" src="/logo-apec.png" alt="Logo APEC-LIT"/><div><b>APEC BÉNIN</b><small>Portail adhérents</small></div></div><div className="nav-caption">GESTION</div><div className="nav-item selected"><UserRound size={17}/> Membres <span className="nav-count">{members.length}</span></div><div className="sidebar-bottom"><div className="user-mini"><div className="user-avatar">{credentials.username.slice(0,1).toUpperCase()}</div><div><b>{credentials.username}</b><small>Administrateur</small></div><button className="icon-button logout" title="Déconnexion" onClick={()=>{setCredentials(null);setMembers([]);}}><LogOut size={17}/></button></div><div className="sidebar-foot">Association des promoteurs<br/>d'eau conditionnée du Bénin</div></div></aside>
+    <main className="main-area"><header className="topbar"><div className="breadcrumb">Espace association <ChevronRight size={14}/> <b>Membres</b></div><div className="topbar-actions"><ThemeToggle theme={theme} toggleTheme={toggleTheme}/><div className="secure-pill"><span/> Espace sécurisé</div></div></header><section className="content"><div className="page-heading"><div><div className="eyebrow">VOTRE ASSOCIATION</div><h1>Gestion des membres</h1><p>Gérez les adhésions et éditez les cartes de membre.</p></div><button className="button primary" onClick={()=>setEditing({ ...emptyMember })}><Plus size={17}/> Ajouter un membre</button></div>
       <div className="stats-grid"><Stat icon={<UserRound/>} label="Total des membres" value={members.length} tone="mint"/><Stat icon={<Activity/>} label="Adhésions actives" value={activeCount} tone="green"/><Stat icon={<CalendarDays/>} label="À renouveler" value={inactiveCount} tone="amber"/></div>
       <section className="members-panel"><div className="panel-head"><div><h2>Annuaire des membres</h2><p>Retrouvez les informations et cartes de vos adhérents.</p></div><div className="table-tools"><div className="search-wrap"><Search size={16}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Rechercher un membre…"/></div><select value={filter} onChange={e=>setFilter(e.target.value)}><option>Tous</option><option>Actifs</option><option>À renouveler</option></select></div></div>{notice && <div className="notice" onClick={()=>setNotice('')}>{notice}<button><X size={14}/></button></div>}
         <div className="table-wrap"><table><thead><tr><th>MEMBRE</th><th>ENTREPRISE</th><th>N° ADHÉRENT</th><th>STATUT</th><th>VALIDITÉ</th><th></th></tr></thead><tbody>{filtered.length === 0 ? <tr><td className="empty-state" colSpan="6">{members.length ? 'Aucun résultat pour cette recherche.' : 'Aucun membre pour le moment. Ajoutez votre premier adhérent.'}</td></tr> : filtered.map(m => { const valid = m.active && (!m.expires_on || m.expires_on >= today()); return <tr key={m.id}><td><div className="member-cell"><div className="member-avatar">{m.first_name[0]}{m.last_name[0]}</div><div><b>{m.first_name} {m.last_name}</b><small>{m.email || m.phone || '—'}</small></div></div></td><td>{m.company}</td><td className="mono">{m.membership_number}</td><td><span className={`badge ${valid ? 'badge-active' : 'badge-off'}`}><i/>{valid ? 'Actif' : 'À renouveler'}</span></td><td className="date-cell">{m.expires_on ? formatDate(m.expires_on) : 'Sans échéance'}</td><td><div className="row-actions"><button className="button outline small" onClick={()=>printCard(m)}><Printer size={14}/> Carte</button><button className="icon-button" title="Modifier" onClick={()=>editMember(m)}><ChevronRight size={17}/></button><button className="icon-button danger" title="Supprimer" onClick={()=>removeMember(m)}><Trash2 size={15}/></button></div></td></tr>})}</tbody></table></div><div className="table-foot">{filtered.length} membre{filtered.length>1?'s':''} affiché{filtered.length>1?'s':''}<span><ShieldCheck size={14}/> Les informations privées restent dans l'espace sécurisé.</span></div></section><div className="content-foot">APEC Bénin <span>·</span> Gestion des adhésions</div></section></main>{editing && <MemberModal member={editing} close={()=>setEditing(null)} save={saveMember}/>}</div>;
