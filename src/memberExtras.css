@@ -85,3 +85,6 @@ html[data-theme="dark"] .mobile-brand b{color:#e3ece8}
 html[data-theme="dark"] .mobile-brand.brand-lock small{color:#9cafa7}
 html[data-theme="dark"] .site-footer,html[data-theme="dark"] .content-foot,html[data-theme="dark"] .login-footer{color:#879b92}
 @media(max-width:650px){.verify-top{margin-bottom:24px}.verify-brand.brand-lock{gap:9px}.verify-brand .brand-logo{width:38px;height:38px}.mobile-brand.brand-lock{display:flex}.theme-toggle{width:34px;padding:0}.theme-toggle span{display:none}.topbar-actions{gap:6px}.secure-pill{padding:6px 8px}.login-theme-toggle{top:17px;right:17px}.sidebar .brand-logo{width:34px;height:34px}.heading-actions{width:100%;flex-direction:column}.heading-actions .button{width:100%}}
+.verify-person .verify-photo{width:112px;height:112px;flex:none;object-fit:cover;border-radius:14px}
+.verify-details a{color:inherit}
+.verify-details b{min-width:0;overflow-wrap:anywhere;text-align:right}
