@@ -93,3 +93,5 @@ html[data-theme="dark"] .site-footer,html[data-theme="dark"] .content-foot,html[
 .expiry-field{display:grid;align-content:start}
 .member-modal .expiry-field .checkbox-line{margin-top:9px}
 .member-modal .expiry-field input:disabled{opacity:.45;cursor:not-allowed}
+.site-footer a{color:inherit;font-weight:700}
+.verify-shell .site-footer{text-align:center;line-height:1.9;overflow-wrap:anywhere;padding:0 12px}

@@ -100,6 +100,8 @@ export function remainingDays(expiresOn, today) {
   return `${days} j (au ${today.split('-').reverse().join('/')})`;
 }
 
+import { ASSOCIATION } from './association.js';
+
 // Signataire des cartes : a mettre a jour avec la signature si le president change.
 const SIGNER = { name: 'Jonas M. AGBOTON', title: 'Président de l’APEC-LIT' };
 
@@ -206,7 +208,8 @@ export function buildCardDocument(member, qrUrl, photoUrl, logoUrl = '', assets 
 .signature{left:64.800mm;top:33.900mm;width:18mm;height:7.900mm;object-fit:contain;z-index:4;filter:brightness(.6) saturate(1.9) drop-shadow(0 0 .06mm #23358f)}
 .signer{left:64.400mm;width:18.800mm;top:42.200mm;text-align:center;line-height:1.2;white-space:nowrap;z-index:5}.signer b{display:block;font-size:5.300pt;color:#10151d}.signer span{display:block;font-size:4.300pt;font-weight:700;color:#0b3a9e}
 .swoosh{left:0;top:41mm;width:24mm;height:7mm}
-.b-foot{left:0;right:0;bottom:0;height:6.600mm;background:linear-gradient(90deg,#082878,#0b3c9c,#082878);border-top:.35mm solid #35a8ee;display:flex;align-items:center;justify-content:center;gap:2mm;color:#fff;font-size:4.700pt;white-space:nowrap;z-index:2}
+.b-foot{left:0;right:0;bottom:0;height:6.800mm;box-sizing:border-box;padding-bottom:1.150mm;background:linear-gradient(90deg,#082878,#0b3c9c,#082878);border-top:.35mm solid #35a8ee;display:flex;align-items:center;justify-content:center;gap:2mm;color:#fff;font-size:4.700pt;white-space:nowrap;z-index:2}
+.b-foot .b-text{text-align:center;line-height:1.15;font-size:4.400pt}.b-text strong{display:block;margin-top:.25mm;font-size:5pt;color:#fff}
 .b-foot svg{width:4.200mm;height:4.200mm}.b-foot u{width:5mm;height:.2mm;background:#9db8e8}
 @media(max-width:700px){body{padding:12px}.card{zoom:1.05}}
 @media print{@page{size:85.6mm 54mm;margin:0}html,body{width:85.6mm;padding:0!important;margin:0!important;background:#fff!important}.toolbar{display:none!important}.cards{display:block}.card{zoom:1;border-radius:0;box-shadow:none;break-after:page;page-break-after:always}.card:last-child{break-after:auto;page-break-after:auto}}
@@ -238,7 +241,7 @@ export function buildCardDocument(member, qrUrl, photoUrl, logoUrl = '', assets 
     <div class="motto">Eau potable -<br>Bien-être - Solidarité</div>
     ${mark(assets.stamp, 'stamp', 'Cachet de l’APEC-LIT')}${mark(assets.signature, 'signature', `Signature de ${SIGNER.name}`)}
     ${mark(assets.signature, 'signature', '') ? `<div class="signer"><b>${SIGNER.name}</b><span>${SIGNER.title}</span></div>` : ''}
-    <div class="b-foot">${BACK_ICONS.lock}<u></u><span>Cette carte est strictement personnelle. Toute reproduction est interdite.</span><u></u>${BACK_ICONS.lock}</div>
+    <div class="b-foot">${BACK_ICONS.lock}<span class="b-text">Cette carte est strictement personnelle. Toute reproduction est interdite.<strong>${ASSOCIATION.website} &nbsp;•&nbsp; ${ASSOCIATION.email} &nbsp;•&nbsp; ${ASSOCIATION.phone}</strong></span>${BACK_ICONS.lock}</div>
     <span class="frame"></span>
   </article>
 </main></body></html>`;

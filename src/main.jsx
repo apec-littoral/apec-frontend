@@ -9,6 +9,7 @@ import { askConfirm } from './confirmDialog.js';
 import { CardAssetsModal } from './CardAssetsModal.jsx';
 import { ColorMenu } from './ColorMenu.jsx';
 import { applyAccent, loadAccent } from './accent.js';
+import { ASSOCIATION } from './association.js';
 import { auth, firebaseConfig } from './firebase.js';
 import { initializeApp, deleteApp } from 'firebase/app';
 import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
@@ -63,7 +64,7 @@ function Verification({ token, theme, toggleTheme }) {
       <h1>{error ? 'Carte introuvable' : !member ? 'Vérification en cours…' : valid ? 'Adhésion confirmée' : 'Adhésion expirée'}</h1>
       {member && <><p className="verify-note">Cette carte est associée au membre suivant :</p><div className="verify-person">{member.photo_data ? <img className="verify-photo" src={member.photo_data} alt={`Photo de ${member.first_name} ${member.last_name}`}/> : <div className="avatar"><UserRound size={22}/></div>}<div><strong>{member.first_name} {member.last_name}</strong><span>{member.company}</span></div></div><div className="verify-details">{member.quality && <div><span>Qualité</span><b>{member.quality}</b></div>}{member.role && <div><span>Fonction</span><b>{member.role}</b></div>}{member.commune && <div><span>Département / Commune</span><b>{member.commune}</b></div>}{member.address && <div><span>Adresse</span><b>{member.address}</b></div>}<div><span>Numéro membre</span><b>{member.membership_number}</b></div><div><span>Statut</span><b className={valid ? 'status-text' : 'status-text expired'}>{valid ? 'Membre actif' : 'Non actif'}</b></div>{[member.phone, member.phone2].filter(Boolean).map((number, index) => <div key={index}><span>{index ? 'Téléphone 2' : 'Téléphone'}</span><b><a href={`tel:${number}`}>{number}</a></b></div>)}{member.email && <div><span>E-mail</span><b><a href={`mailto:${member.email}`}>{member.email}</a></b></div>}{member.joined_on && <div><span>Membre depuis le</span><b>{formatDate(member.joined_on)}</b></div>}<div><span>Validité</span><b>{member.expires_on ? `Jusqu'au ${formatDate(member.expires_on)}` : "Sans date d'expiration"}</b></div></div><p className="small-disclaimer">Vérification délivrée par l'APEC-LIT</p></>}
       {error && <p className="verify-note">Ce QR code ne correspond à aucun membre enregistré.</p>}
-    </section><footer className="site-footer">APEC-LIT <span>•</span> Portail de vérification</footer>
+    </section><footer className="site-footer">APEC-LIT <span>•</span> Portail de vérification <span>•</span> <a href={`https://${ASSOCIATION.website}`} target="_blank" rel="noreferrer">{ASSOCIATION.website}</a> <span>•</span> <a href={`mailto:${ASSOCIATION.email}`}>{ASSOCIATION.email}</a> <span>•</span> <a href={`tel:${ASSOCIATION.phoneLink}`}>{ASSOCIATION.phone}</a></footer>
   </main>;
 }
 
