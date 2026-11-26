@@ -4,6 +4,7 @@ import { Activity, ArrowLeft, BadgeCheck, Building2, CalendarDays, Check, Chevro
 import './style.css';
 import './memberExtras.css';
 import { buildCardDocument } from './memberCard.js';
+import { NETWORK_ERROR, userMessage } from './apiErrors.js';
 import { auth, firebaseConfig } from './firebase.js';
 import { initializeApp, deleteApp } from 'firebase/app';
 import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
@@ -78,9 +79,15 @@ function Admin({ theme, toggleTheme }) {
   useEffect(() => onAuthStateChanged(auth, currentUser => { setUser(currentUser); setAuthReady(true); }), []);
   async function request(path, options = {}) {
     const idToken = await user.getIdToken();
-    const response = await fetch(`${API}${path}`, { ...options, headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), Authorization: `Bearer ${idToken}`, ...options.headers } });
-    if (response.status === 401) { await signOut(auth); throw new Error('Session expiree. Reconnectez-vous.'); }
-    if (!response.ok) { const data = await response.json().catch(() => ({})); const detail = Array.isArray(data.detail) ? data.detail.map(item => `${item.loc?.slice(1).join('.') || 'requete'} : ${item.msg}`).join(' | ') : data.detail; throw new Error(detail || 'Une erreur est survenue.'); }
+    let response;
+    try { response = await fetch(`${API}${path}`, { ...options, headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), Authorization: `Bearer ${idToken}`, ...options.headers } }); }
+    catch (err) { console.error('API injoignable', path, err); throw new Error(NETWORK_ERROR); }
+    if (response.status === 401) { await signOut(auth); throw new Error('Session expirée. Reconnectez-vous.'); }
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      console.error('Erreur API', response.status, path, Array.isArray(data.detail) ? data.detail.map(({ loc, msg }) => ({ loc, msg })) : data.detail);
+      throw new Error(userMessage(response.status, data.detail));
+    }
     return response.status === 204 ? null : response.json();
   }
   async function refresh() { try { setMembers(await request('/api/members')); } catch (e) { setNotice(e.message); } }
@@ -143,7 +150,7 @@ function Admin({ theme, toggleTheme }) {
   }
   async function saveMember(form) {
     const payload = { ...form, joined_on: form.joined_on || null, expires_on: form.expires_on || null };
-    const item = editing;
+    const item = editing?.id ? editing : null; // une nouvelle fiche n'a pas encore d'identifiant
     await request(item ? `/api/members/${item.id}` : '/api/members', { method: item ? 'PUT' : 'POST', body: JSON.stringify(payload) });
     setEditing(null); setNotice(item ? 'Les informations du membre ont été mises à jour.' : 'Le membre a été ajouté.'); await refresh();
   }
