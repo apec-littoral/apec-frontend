@@ -4,6 +4,8 @@ const FIELD_LABELS = {
   first_name: 'Prénom',
   last_name: 'Nom',
   company: 'Entreprise / marque',
+  role: 'Fonction',
+  address: 'Adresse',
   membership_number: "Numéro d'adhérent",
   phone: 'Téléphone',
   email: 'Adresse e-mail',
