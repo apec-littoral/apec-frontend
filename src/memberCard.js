@@ -80,7 +80,7 @@ export function buildCardDocument(member, qrUrl, photoUrl, logoUrl = '', assets 
   const rows = [
     ['pin', 'Département / Commune', member.commune || 'LITTORAL'],
     ['home', 'Adresse complète', member.address],
-    ['phone', 'Téléphone', member.phone],
+    ['phone', 'Téléphone', [member.phone, member.phone2].filter(Boolean).join(' / ')],
     ['mail', 'Email', member.email],
   ].filter(([, , value]) => value)
     .map(([name, label, value]) => `<div class="row"><i>${ICONS[name]}</i><div><small>${label}</small><span style="font-size:${fitSize(value, 5.6, 32)}">${escapeHtml(value)}</span></div></div>`)

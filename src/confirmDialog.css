@@ -1,12 +1,12 @@
-.confirm-dialog{width:min(calc(100% - 32px),420px);margin:auto;padding:22px;border:1px solid #dce2e7;border-radius:14px;background:#fff;color:#182d3e;box-shadow:0 25px 80px #10202d55}
-.confirm-dialog::backdrop{background:#0d1e2b99;backdrop-filter:blur(2px)}
+.confirm-dialog{width:min(calc(100% - 32px),420px);margin:auto;padding:22px;border:1px solid hsl(var(--accent-h) calc(var(--accent-s) * 18.6%) 88.4%);border-radius:14px;background:#fff;color:hsl(var(--accent-h) calc(var(--accent-s) * 44.2%) 16.9%);box-shadow:0 25px 80px hsl(var(--accent-h) calc(var(--accent-s) * 47.5%) 12.0% / 0.333)}
+.confirm-dialog::backdrop{background:hsl(var(--accent-h) calc(var(--accent-s) * 53.6%) 11.0% / 0.600);backdrop-filter:blur(2px)}
 .confirm-dialog h2{margin:0 0 10px;font-size:18px}
-.confirm-dialog p{margin:0;font-size:13px;line-height:1.55;color:#5f6b74;overflow-wrap:anywhere}
+.confirm-dialog p{margin:0;font-size:13px;line-height:1.55;color:hsl(var(--accent-h) calc(var(--accent-s) * 10.0%) 41.4%);overflow-wrap:anywhere}
 .confirm-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:22px}
 .confirm-dialog .button{cursor:pointer}
-.confirm-dialog .button:focus-visible{outline:3px solid #688eae;outline-offset:2px}
+.confirm-dialog .button:focus-visible{outline:3px solid hsl(var(--accent-h) calc(var(--accent-s) * 30.2%) 54.5%);outline-offset:2px}
 .confirm-dialog .confirm-danger{background:#b3423a;color:#fff}
 .confirm-dialog .confirm-danger:hover{background:#98352e}
-html[data-theme="dark"] .confirm-dialog{background:#181e23;border-color:#2a3239;color:#e3e8ec}
-html[data-theme="dark"] .confirm-dialog p{color:#9ca6af}
-html[data-theme="dark"] .confirm-dialog .button.outline{background:#1c242a;border-color:#303941;color:#e3e8ec}
+html[data-theme="dark"] .confirm-dialog{background:hsl(var(--accent-h) calc(var(--accent-s) * 18.6%) 11.6%);border-color:hsl(var(--accent-h) calc(var(--accent-s) * 15.2%) 19.4%);color:hsl(var(--accent-h) calc(var(--accent-s) * 19.1%) 90.8%)}
+html[data-theme="dark"] .confirm-dialog p{color:hsl(var(--accent-h) calc(var(--accent-s) * 10.6%) 64.9%)}
+html[data-theme="dark"] .confirm-dialog .button.outline{background:hsl(var(--accent-h) calc(var(--accent-s) * 20.0%) 13.7%);border-color:hsl(var(--accent-h) calc(var(--accent-s) * 15.0%) 22.2%);color:hsl(var(--accent-h) calc(var(--accent-s) * 19.1%) 90.8%)}

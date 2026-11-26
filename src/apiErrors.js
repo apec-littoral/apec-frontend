@@ -10,6 +10,7 @@ const FIELD_LABELS = {
   commune: 'Département / Commune',
   membership_number: "Numéro d'adhérent",
   phone: 'Téléphone',
+  phone2: 'Téléphone 2',
   email: 'Adresse e-mail',
   photo_data: 'Photo',
   joined_on: "Date d'adhésion",
