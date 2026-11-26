@@ -1,0 +1,8 @@
+.photo-upload-row{display:flex;align-items:center;gap:14px;padding:12px;margin-bottom:17px;border:1px solid #e7eeea;border-radius:10px;background:#f9fbfa}
+.photo-preview{width:56px;height:56px;flex:none;border-radius:12px;background:#eaf2ee;color:#43836c;display:grid;place-items:center;overflow:hidden}
+.photo-preview img{width:100%;height:100%;object-fit:cover}
+.photo-copy{display:flex;flex:1;align-items:flex-start;flex-direction:column;gap:4px}
+.photo-copy b{font-size:11px;color:#385a50}.photo-copy small{font-size:9px;color:#87968f}
+.photo-pick{position:relative;display:inline-flex!important;margin-top:3px;border:1px solid #dce8e1;border-radius:6px;background:#fff;color:#287760!important;padding:6px 9px;font-size:9px!important;cursor:pointer}
+.photo-pick input{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;overflow:hidden!important}
+@media(max-width:650px){.photo-upload-row{margin-bottom:14px}}
