@@ -4,8 +4,9 @@ import { Activity, ArrowLeft, BadgeCheck, Building2, CalendarDays, Check, Chevro
 import './style.css';
 import './memberExtras.css';
 import { buildCardDocument } from './memberCard.js';
-import { auth } from './firebase.js';
-import { GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
+import { auth, firebaseConfig } from './firebase.js';
+import { initializeApp, deleteApp } from 'firebase/app';
+import { createUserWithEmailAndPassword, getAuth, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
 
 const API = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 const emptyMember = { first_name: '', last_name: '', membership_number: '', company: '', phone: '', email: '', joined_on: '', expires_on: '', active: true };
@@ -111,11 +112,30 @@ function Admin({ theme, toggleTheme }) {
       ? `${created.email} est autorise a se connecter avec Google.`
       : `Le compte de ${created.email} est cree.`;
     if (form.auth_method === 'password') {
+      let inviteApp;
+      let inviteAuth;
       try {
-        await sendPasswordResetEmail(auth, created.email);
+        inviteApp = initializeApp(firebaseConfig, `apec-invite-${crypto.randomUUID()}`);
+        inviteAuth = getAuth(inviteApp);
+        inviteAuth.languageCode = 'fr';
+        const temporaryPassword = `${crypto.randomUUID()}A9!x`;
+        const { user: invitedUser } = await createUserWithEmailAndPassword(inviteAuth, created.email, temporaryPassword);
+        if (form.display_name.trim()) await updateProfile(invitedUser, { displayName: form.display_name.trim() });
+      } catch (err) {
+        await request(`/api/admin/users/${created.id}`, { method: 'PUT', body: JSON.stringify({ active: false }) }).catch(() => {});
+        const detail = err.code === 'auth/email-already-in-use'
+          ? 'Cette adresse a deja un compte Firebase. Choisissez Google ou utilisez une autre adresse.'
+          : 'Le compte Firebase n’a pas pu etre cree. Verifiez que E-mail/Mot de passe est actif.';
+        throw new Error(detail);
+      }
+      try {
+        await sendPasswordResetEmail(inviteAuth, created.email);
         message += ' Un lien pour definir son mot de passe lui a ete envoye.';
       } catch {
-        message += " Le lien de mot de passe n\'a pas pu etre envoye; il pourra utiliser Mot de passe oublie.";
+        message += ' Le lien n’a pas pu etre envoye; cette personne pourra utiliser Mot de passe oublie.';
+      } finally {
+        await signOut(inviteAuth).catch(() => {});
+        await deleteApp(inviteApp).catch(() => {});
       }
     }
     setShowUserModal(false);

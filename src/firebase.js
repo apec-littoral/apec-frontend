@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: 'AIzaSyARK78b5pL0k3i5ZZciqZkNWzuNUtt7eNk',
   authDomain: 'apec-lit.firebaseapp.com',
   projectId: 'apec-lit',
