@@ -16,6 +16,14 @@
 .theme-toggle:hover{background:#f4f8f5;border-color:#bfd1c8}
 .topbar-actions{display:flex;align-items:center;gap:10px}
 .login-theme-toggle{position:absolute;top:24px;right:24px}
+.forgot-password{display:block;margin:14px auto 0;border:0;background:transparent;color:#087765;font-size:11px;font-weight:700;padding:6px}
+.forgot-password:hover{text-decoration:underline}
+.google-button{height:44px;font-size:12px}
+.google-mark{width:18px;height:18px}
+.login-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:#98a59f;font-size:10px}
+.login-divider:before,.login-divider:after{content:'';height:1px;flex:1;background:#e5ece8}
+.form-success{color:#277650;background:#edf8f1;border:1px solid #d3eedc;padding:10px 12px;border-radius:7px;font-size:11px}
+.auth-loading{min-height:100vh;display:grid;place-items:center;background:#f5f8f6;color:#45645a;font-size:13px}
 .verify-top{width:min(100%,600px);display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:32px}
 .verify-brand.brand-lock{margin:0}
 html[data-theme="dark"]{color-scheme:dark}
@@ -44,6 +52,12 @@ html[data-theme="dark"] .icon-button{color:#aabbb3}
 html[data-theme="dark"] .icon-button:hover{background:#293b35;color:#dce9e3}
 html[data-theme="dark"] .theme-toggle{background:#1b2925;border-color:#35463f;color:#d5e0db}
 html[data-theme="dark"] .theme-toggle:hover{background:#263832;border-color:#547065}
+html[data-theme="dark"] .forgot-password{color:#73c5a6}
+html[data-theme="dark"] .google-button{background:#18231f;border-color:#35463f;color:#e3ece8}
+html[data-theme="dark"] .login-divider{color:#879b92}
+html[data-theme="dark"] .login-divider:before,html[data-theme="dark"] .login-divider:after{background:#35463f}
+html[data-theme="dark"] .form-success{background:#14291f;border-color:#28563f;color:#9bd5b3}
+html[data-theme="dark"] .auth-loading{background:#101917;color:#c3d7ce}
 html[data-theme="dark"] .secure-pill{background:#1b3029;border-color:#2c493d;color:#b5d6c6}
 html[data-theme="dark"] .notice{background:#1b3029;color:#b5d6c6}
 html[data-theme="dark"] .member-avatar,html[data-theme="dark"] .avatar,html[data-theme="dark"] .photo-preview{background:#243a32;color:#a9d6c2}
