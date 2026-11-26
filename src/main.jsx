@@ -80,7 +80,7 @@ function Admin({ theme, toggleTheme }) {
     const idToken = await user.getIdToken();
     const response = await fetch(`${API}${path}`, { ...options, headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), Authorization: `Bearer ${idToken}`, ...options.headers } });
     if (response.status === 401) { await signOut(auth); throw new Error('Session expiree. Reconnectez-vous.'); }
-    if (!response.ok) { const data = await response.json().catch(() => ({})); throw new Error(data.detail || 'Une erreur est survenue.'); }
+    if (!response.ok) { const data = await response.json().catch(() => ({})); const detail = Array.isArray(data.detail) ? data.detail.map(item => `${item.loc?.slice(1).join('.') || 'requete'} : ${item.msg}`).join(' | ') : data.detail; throw new Error(detail || 'Une erreur est survenue.'); }
     return response.status === 204 ? null : response.json();
   }
   async function refresh() { try { setMembers(await request('/api/members')); } catch (e) { setNotice(e.message); } }
