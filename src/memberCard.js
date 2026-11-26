@@ -42,12 +42,12 @@ const solid = paths => `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden
 
 const BACK_ICONS = {
   person: solid('<circle cx="12" cy="7" r="5"/><path d="M2 23c0-6 4-9 10-9s10 3 10 9z"/>'),
-  badge: line('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M9 5V2h6v3M13 11h5M13 16h5"/><circle cx="8" cy="12" r="1.500"/><path d="M6 17c.5-2 3.500-2 4 0"/>'),
+  badge: solid('<path d="M9 2h6v5H9z"/><path fill-rule="evenodd" d="M3 6h5v2.500h8V6h5v16H3zM8.500 11a2 2 0 1 0 .01 0M5.500 19h6c0-4.500-6-4.500-6 0M13.500 12h5v1.800h-5zm0 3.800h5v1.800h-5z"/>'),
   tie: solid('<path d="M8 2h8l-2 5 3 10-5 6-5-6 3-10z"/>'),
-  card: line('<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M5 16c.7-2 5.300-2 6 0M14 10h5M14 14h5"/>'),
-  shield: line('<path d="M12 2 4 5v7c0 5 3.500 8.500 8 10 4.500-1.500 8-5 8-10V5z"/><path d="m8 12 3 3 5-6"/>'),
+  card: solid('<path fill-rule="evenodd" d="M2 4h20v16H2zM8 7.500a2.300 2.300 0 1 0 .01 0M4.500 17h7c0-5.500-7-5.500-7 0M13.500 8.500h6v1.900h-6zm0 4.300h6v1.900h-6z"/>'),
+  shield: solid('<path d="M12 1 3 4.500V12c0 6 4 9.500 9 11 5-1.500 9-5 9-11V4.500z"/><path fill="none" stroke="#fff" stroke-width="2.600" stroke-linecap="round" stroke-linejoin="round" d="m7.500 12 3.200 3.200 6-6.400"/>'),
   factory: solid('<path d="M2 22V10l6 4v-4l6 4V3h6l2 19zM6 17v2h2v-2zm5 0v2h2v-2zm5 0v2h2v-2z"/>'),
-  calendar: line('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 2v5M16 2v5M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/>'),
+  calendar: solid('<path d="M3 5h3V2h3v3h6V2h3v3h3v4H3z"/><path fill-rule="evenodd" d="M3 10h18v12H3zm3 2.500v2.500h3v-2.500zm4.500 0v2.500h3v-2.500zm4.500 0v2.500h3v-2.500zM6 17v2.500h3V17zm4.500 0v2.500h3V17zm4.500 0v2.500h3V17z"/>'),
   expiry: line('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 2v5M16 2v5m-8 8.500 3 3 5-5"/>'),
   clock: line('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'),
   team: solid('<circle cx="12" cy="6" r="4"/><circle cx="4.500" cy="9" r="3"/><circle cx="19.500" cy="9" r="3"/><path d="M0 20c0-5 2-7 5-7 1 0 2 .3 2.500 1C6 16 5.500 18 5.500 20zM24 20c0-5-2-7-5-7-1 0-2 .3-2.500 1 1.500 2 2 4 2 6zM7 22c0-6 2-10 5-10s5 4 5 10z"/><path fill="#fff" d="M12 14.500c-1.500 2.200-2.300 3.400-2.300 4.600a2.300 2.300 0 0 0 4.600 0c0-1.200-.8-2.400-2.300-4.600"/>'),
@@ -57,6 +57,42 @@ const BACK_ICONS = {
 const longDate = value => value ? new Date(`${value}T00:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
 
 // Les jours restants sont figes au moment de l'impression : la date de calcul est donc indiquee.
+const BACK_DECOR = `<svg class="decor" viewBox="0 0 856 540" preserveAspectRatio="none" aria-hidden="true">
+<defs>
+<linearGradient id="dBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a2f8f"/><stop offset=".55" stop-color="#0b55c4"/><stop offset="1" stop-color="#0a3596"/></linearGradient>
+<linearGradient id="dSky" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fdcfb"/><stop offset="1" stop-color="#118fe0"/></linearGradient>
+<linearGradient id="dGreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f7a2c"/><stop offset=".5" stop-color="#2fb344"/><stop offset="1" stop-color="#12862f"/></linearGradient>
+<radialGradient id="dMist"><stop offset="0" stop-color="#9bdcfa" stop-opacity=".55"/><stop offset="1" stop-color="#9bdcfa" stop-opacity="0"/></radialGradient>
+</defs>
+<ellipse cx="30" cy="250" rx="90" ry="190" fill="url(#dMist)"/><ellipse cx="835" cy="300" rx="80" ry="200" fill="url(#dMist)"/><ellipse cx="200" cy="30" rx="110" ry="60" fill="url(#dMist)" opacity=".6"/>
+<path fill="url(#dBlue)" d="M752 0H856V480C851 420 852 340 853 250C854 140 826 56 752 0Z"/>
+<path fill="url(#dGreen)" d="M748 4C830 54 856 140 854 252C853 320 849 372 840 408C843 360 843 305 843 250C842 142 815 62 748 4Z"/>
+<path fill="none" stroke="url(#dSky)" stroke-width="3" d="M730 8C812 62 838 146 837 250C836 312 835 356 831 392"/>
+<path fill="url(#dBlue)" d="M0 70C20 170 18 300 11 380L0 440Z"/>
+<path fill="none" stroke="url(#dSky)" stroke-width="4" d="M24 24C8 90 25 190 24 270C23 330 17 380 10 420"/>
+<path fill="url(#dSky)" d="M0 398C48 414 112 466 330 476H0Z"/>
+<path fill="#fff" d="M0 413C56 428 128 470 296 476H0Z"/>
+<path fill="url(#dBlue)" d="M0 422C66 436 136 472 268 476H0Z"/>
+<path fill="#fff" d="M0 442C58 452 108 470 188 476H0Z"/>
+<path fill="url(#dGreen)" d="M0 449C50 458 94 470 164 476H0Z"/>
+<path fill="url(#dSky)" d="M856 436C851 456 838 470 818 476H856Z"/>
+<path fill="#fff" d="M856 449C850 464 842 472 830 476H856Z"/>
+<path fill="url(#dBlue)" d="M856 456C851 466 845 473 836 476H856Z"/>
+</svg>`;
+
+// Goutte brillante posee sur ses ondulations.
+const BIG_DROP = `<svg class="b-drop" viewBox="0 0 100 112" aria-hidden="true">
+<defs><radialGradient id="dDrop" cx=".38" cy=".68" r=".72"><stop offset="0" stop-color="#e4f8ff"/><stop offset=".35" stop-color="#6fd0fb"/><stop offset=".75" stop-color="#1597ea"/><stop offset="1" stop-color="#0753b8"/></radialGradient></defs>
+<g fill="none" stroke="#2a9fe6"><ellipse cx="50" cy="97" rx="46" ry="11" stroke-width="1.500" opacity=".45"/><ellipse cx="50" cy="97" rx="31" ry="7" stroke-width="2" opacity=".7"/><ellipse cx="50" cy="96" rx="17" ry="3.500" stroke-width="2.500"/></g>
+<path fill="url(#dDrop)" d="M50 2C46 28 22 47 22 67a28 28 0 0 0 56 0C78 47 54 28 50 2Z"/>
+<path fill="none" stroke="#fff" stroke-width="5.500" stroke-linecap="round" d="M33 66c0 10 6 17 14 19"/><circle cx="37" cy="52" r="3.200" fill="#fff"/>
+</svg>`;
+
+// Trait courbe effile, comme sous les textes du modele.
+const FLOURISH = (className) => `<svg class="flourish ${className}" viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true"><path fill="#0b55c4" d="M2 17C52 3 140 1 198 11C140 6 58 8 2 17Z"/></svg>`;
+
+const FEATURE_SHIELD = `<svg viewBox="0 0 64 72" aria-hidden="true"><defs><linearGradient id="dShield" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1473e6"/><stop offset="1" stop-color="#082c86"/></linearGradient></defs><path fill="url(#dShield)" d="M32 1 3 12v22c0 19 12 31 29 37 17-6 29-18 29-37V12Z"/><path fill="none" stroke="#fff" stroke-width="3" d="M32 8 10 16.500V34c0 14 9 24 22 29 13-5 22-15 22-29V16.500Z"/><path fill="none" stroke="#fff" stroke-width="7.500" stroke-linecap="round" stroke-linejoin="round" d="m20 35 9 9 16-18"/></svg>`;
+
 export function remainingDays(expiresOn, today) {
   if (!expiresOn) return 'Illimité';
   const days = Math.round((Date.parse(`${expiresOn}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86400000);
@@ -144,29 +180,33 @@ export function buildCardDocument(member, qrUrl, photoUrl, logoUrl = '', assets 
 .waves{left:0;bottom:0;width:100%;height:12mm}
 .number{right:1.800mm;bottom:5.500mm;max-width:30mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:.9mm 2.500mm;border:.3mm solid #7fd694;border-radius:3mm;background:#178a35;color:#fff;font-weight:900}
 /* Verso : informations personnelles */
-.frame{inset:0;border:.7mm solid #0b4fb8;border-radius:3mm;z-index:6;pointer-events:none}
-.b-logo{left:3mm;top:1.600mm;width:20mm;height:19mm;object-fit:contain}
+.back>.b-logo,.back>.b-assoc,.back>.b-name,.back>.table,.back>.feature{z-index:2}
+.decor{left:0;top:0;width:100%;height:100%}
+.frame{inset:0;border:.9mm solid #0a3a9e;border-radius:3mm;box-shadow:inset 0 0 0 .3mm #fff,inset 0 0 0 .55mm #35a8ee;z-index:6;pointer-events:none}
+.b-logo{left:3.700mm;top:2.300mm;width:18.600mm;height:18.600mm;object-fit:contain;padding:.35mm;border:.3mm solid #1b8fe0;border-radius:50%;background:#fff;box-shadow:0 0 0 .35mm #fff,0 0 0 .55mm #9bd8f8}
 .b-assoc{left:24mm;width:41mm;top:1.600mm;text-align:center;font-size:4.700pt;font-weight:900;line-height:1.18;color:#0b3a9e;text-transform:uppercase;white-space:nowrap}
 .b-name{left:24mm;width:41mm;top:5.500mm;text-align:center;font-size:20pt;font-weight:900;line-height:1;color:#0b3a9e;white-space:nowrap}.b-name em{font-style:normal;color:#178a35}
-.table{left:24.700mm;top:12.800mm;width:39.800mm;border:.25mm solid #1450b4;border-radius:1.500mm;overflow:hidden;background:#fff}
-.table h2{margin:0;height:2.900mm;line-height:2.900mm;text-align:center;background:#0b3fa8;color:#fff;font-size:5.300pt}
+.table{left:24.700mm;top:12.500mm;width:39.600mm}
+.table h2{margin:0 0 .25mm;height:2.900mm;line-height:2.900mm;text-align:center;background:linear-gradient(90deg,#0a2f8f,#0b4ab8,#0a2f8f);border-radius:1.500mm;color:#fff;font-size:5.300pt}
+.rows-box{border:.25mm solid #4c86d6;border-radius:1.500mm;overflow:hidden;background:#fff}.rows-box .tr:first-child{border-top:0}
 .tr{display:grid;grid-template-columns:4mm 15.600mm minmax(0,1fr);align-items:center;height:3.060mm;border-top:.15mm solid #b8ccec}
 .tr i{display:flex;justify-content:center;color:#0b3fa8}.tr i svg{width:2.350mm;height:2.350mm}
 .tr b{font-size:4.400pt;text-transform:uppercase;white-space:nowrap}
 .tr span{height:100%;display:flex;align-items:center;gap:.6mm;padding-left:.8mm;border-left:.15mm solid #b8ccec;font-weight:700;color:#137a2c;white-space:nowrap;overflow:hidden;line-height:1.05}
 .tr span.dark{color:#10151d}.tr span.wrap{white-space:normal;overflow-wrap:anywhere}
 .state{display:inline-flex;align-items:center;justify-content:center;width:2.200mm;height:2.200mm;border-radius:.4mm;background:${valid ? '#178a35' : '#b3362f'};color:#fff;font-style:normal;font-size:4.500pt}
-.feature{left:2.800mm;width:21mm;display:flex;align-items:center;gap:1.200mm;color:#0b3a9e;font-size:5.200pt;font-weight:900;line-height:1.2;padding-bottom:1.500mm;border-bottom:.2mm solid #5b8bd4}
+.feature{left:2.800mm;width:21mm;display:flex;align-items:center;gap:1.200mm;color:#0b3a9e;font-size:5.200pt;font-weight:900;line-height:1.2;padding-bottom:1.500mm}
 .feature svg{flex:none;width:6.500mm;height:6.500mm}.feature em{font-style:normal;color:#178a35}
 .feature.one{top:23mm}.feature.two{top:33.200mm}
-.b-drop{left:71.300mm;top:2mm;width:7mm;height:10mm}
-.motto{left:65.500mm;width:18.500mm;top:12.800mm;text-align:center;color:#0b3a9e;font-size:5.300pt;font-weight:900;line-height:1.25;padding-bottom:1.200mm;border-bottom:.25mm solid #1450b4}
+.flourish{height:1.100mm;z-index:2}.f-one{left:3.500mm;top:31.200mm;width:20mm}.f-two{left:3.500mm;top:40.200mm;width:20mm}.f-motto{left:65mm;top:19.100mm;width:18.200mm}
+.b-drop{left:69.200mm;top:1.300mm;width:9.600mm;height:10.800mm;z-index:2}
+.motto{left:64.700mm;width:18.800mm;top:12.600mm;text-align:center;color:#0b3a9e;font-size:5.200pt;font-weight:900;line-height:1.25;z-index:2}
 /* Cachet et signature a la place des mentions retirees */
-.stamp{left:66.800mm;top:21.400mm;width:15.600mm;height:15.600mm;object-fit:contain;z-index:3}
-.signature{left:66mm;top:35mm;width:18.200mm;height:7.400mm;object-fit:contain;z-index:4;filter:brightness(.72) saturate(1.7)}
-.signer{left:64.800mm;width:20mm;top:42.500mm;text-align:center;line-height:1.2;white-space:nowrap;z-index:5}.signer b{display:block;font-size:5.200pt;color:#10151d}.signer span{display:block;font-size:4.400pt;font-weight:700;color:#0b3a9e}
+.stamp{left:66.900mm;top:20.700mm;width:13.600mm;height:13.600mm;object-fit:contain;z-index:3}
+.signature{left:64.800mm;top:33.900mm;width:18mm;height:7.900mm;object-fit:contain;z-index:4;filter:brightness(.6) saturate(1.9) drop-shadow(0 0 .06mm #23358f)}
+.signer{left:64.400mm;width:18.800mm;top:42.200mm;text-align:center;line-height:1.2;white-space:nowrap;z-index:5}.signer b{display:block;font-size:5.300pt;color:#10151d}.signer span{display:block;font-size:4.300pt;font-weight:700;color:#0b3a9e}
 .swoosh{left:0;top:41mm;width:24mm;height:7mm}
-.b-foot{left:0;right:0;bottom:0;height:6.600mm;background:#0b3585;display:flex;align-items:center;justify-content:center;gap:2mm;color:#fff;font-size:4.700pt;white-space:nowrap}
+.b-foot{left:0;right:0;bottom:0;height:6.600mm;background:linear-gradient(90deg,#082878,#0b3c9c,#082878);border-top:.35mm solid #35a8ee;display:flex;align-items:center;justify-content:center;gap:2mm;color:#fff;font-size:4.700pt;white-space:nowrap;z-index:2}
 .b-foot svg{width:4.200mm;height:4.200mm}.b-foot u{width:5mm;height:.2mm;background:#9db8e8}
 @media(max-width:700px){body{padding:12px}.card{zoom:1.05}}
 @media print{@page{size:85.6mm 54mm;margin:0}html,body{width:85.6mm;padding:0!important;margin:0!important;background:#fff!important}.toolbar{display:none!important}.cards{display:block}.card{zoom:1;border-radius:0;box-shadow:none;break-after:page;page-break-after:always}.card:last-child{break-after:auto;page-break-after:auto}}
@@ -187,17 +227,17 @@ export function buildCardDocument(member, qrUrl, photoUrl, logoUrl = '', assets 
     <div class="number" style="font-size:${fitSize(member.membership_number, 7.5, 15)}">${escapeHtml(member.membership_number)}</div>
   </article>
   <article class="card back">
+    ${BACK_DECOR}
     <img class="b-logo" src="${logoUrl}" alt="Logo APEC-LIT">
     <div class="b-assoc">Association des promoteurs d’eau<br>conditionnée « Pure Water » du Littoral</div>
     <div class="b-name">APEC-<em>LIT</em></div>
-    <div class="table"><h2>INFORMATIONS PERSONNELLES</h2>${table}</div>
-    <div class="feature one">${BACK_ICONS.shield}<div>Membre<br>officiel<br><em>APEC-LIT</em></div></div>
+    <div class="table"><h2>INFORMATIONS PERSONNELLES</h2><div class="rows-box">${table}</div></div>
+    <div class="feature one">${FEATURE_SHIELD}<div>Membre<br>officiel<br><em>APEC-LIT</em></div></div>
     <div class="feature two">${BACK_ICONS.team}<div>Engagé pour<br>une eau de qualité</div></div>
-    ${DROP.replace('class="drop"', 'class="b-drop"')}
+    ${BIG_DROP}${FLOURISH('f-one')}${FLOURISH('f-two')}${FLOURISH('f-motto')}
     <div class="motto">Eau potable -<br>Bien-être - Solidarité</div>
     ${mark(assets.stamp, 'stamp', 'Cachet de l’APEC-LIT')}${mark(assets.signature, 'signature', `Signature de ${SIGNER.name}`)}
     ${mark(assets.signature, 'signature', '') ? `<div class="signer"><b>${SIGNER.name}</b><span>${SIGNER.title}</span></div>` : ''}
-    ${SWOOSH}
     <div class="b-foot">${BACK_ICONS.lock}<u></u><span>Cette carte est strictement personnelle. Toute reproduction est interdite.</span><u></u>${BACK_ICONS.lock}</div>
     <span class="frame"></span>
   </article>
