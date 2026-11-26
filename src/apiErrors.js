@@ -6,6 +6,7 @@ const FIELD_LABELS = {
   company: 'Entreprise / marque',
   role: 'Fonction',
   address: 'Adresse',
+  commune: 'Département / Commune',
   membership_number: "Numéro d'adhérent",
   phone: 'Téléphone',
   email: 'Adresse e-mail',
@@ -20,6 +21,8 @@ const KNOWN_MESSAGES = {
   "Ce numéro d'adhérent existe déjà.": "Ce numéro d'adhérent existe déjà.",
   'La photo doit être envoyée au format JPEG.': 'La photo doit être envoyée au format JPEG.',
   'This email already has platform access.': 'Cette adresse a déjà accès au portail.',
+  'Only main administrators can change card assets.': 'Seul un administrateur principal peut modifier le cachet et la signature.',
+  'Les images doivent être au format PNG.': 'Les images doivent être au format PNG.',
 };
 
 export const NETWORK_ERROR = 'Connexion au serveur impossible. Vérifiez votre connexion Internet puis réessayez.';

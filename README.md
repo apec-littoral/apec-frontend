@@ -1,4 +1,4 @@
-# APEC Bénin — Portail des membres
+# APEC-LIT — Portail des membres
 
 Interface web React pour administrer les adhérents et afficher la page ouverte au scan d'une carte.
 
