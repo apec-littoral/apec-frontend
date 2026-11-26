@@ -72,6 +72,7 @@ function Admin({ theme, toggleTheme }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('Tous');
   const [editing, setEditing] = useState(null);
+  const [showUserModal, setShowUserModal] = useState(false);
 
   useEffect(() => onAuthStateChanged(auth, currentUser => { setUser(currentUser); setAuthReady(true); }), []);
   async function request(path, options = {}) {
@@ -99,6 +100,26 @@ function Admin({ theme, toggleTheme }) {
     if (!login.email.trim()) { setLoginError('Saisissez votre adresse e-mail pour recevoir le lien de reinitialisation.'); return; }
     try { await sendPasswordResetEmail(auth, login.email.trim()); setLoginNotice("Si cette adresse est enregistree, un lien de reinitialisation vient d'etre envoye."); }
     catch { setLoginError("Impossible d'envoyer le lien. Verifiez l'adresse saisie puis reessayez."); }
+  }
+  async function updatePlatformUser(userId, active) {
+    await request(`/api/admin/users/${userId}`, { method: 'PUT', body: JSON.stringify({ active }) });
+    setNotice(active ? 'Acces utilisateur reactive.' : 'Acces utilisateur desactive.');
+  }
+  async function addPlatformUser(form) {
+    const created = await request('/api/admin/users', { method: 'POST', body: JSON.stringify(form) });
+    let message = form.auth_method === 'google'
+      ? `${created.email} est autorise a se connecter avec Google.`
+      : `Le compte de ${created.email} est cree.`;
+    if (form.auth_method === 'password') {
+      try {
+        await sendPasswordResetEmail(auth, created.email);
+        message += ' Un lien pour definir son mot de passe lui a ete envoye.';
+      } catch {
+        message += " Le lien de mot de passe n\'a pas pu etre envoye; il pourra utiliser Mot de passe oublie.";
+      }
+    }
+    setShowUserModal(false);
+    setNotice(message);
   }
   async function saveMember(form) {
     const payload = { ...form, joined_on: form.joined_on || null, expires_on: form.expires_on || null };
@@ -146,14 +167,36 @@ function Admin({ theme, toggleTheme }) {
   const activeCount = members.filter(m => m.active && (!m.expires_on || m.expires_on >= today())).length;
   const inactiveCount = members.length - activeCount;
   return <div className="app-shell"><aside className="sidebar"><div className="brand-lock"><img className="brand-logo" src="/logo-apec.png" alt="Logo APEC-LIT"/><div><b>APEC BÉNIN</b><small>Portail adhérents</small></div></div><div className="nav-caption">GESTION</div><div className="nav-item selected"><UserRound size={17}/> Membres <span className="nav-count">{members.length}</span></div><div className="sidebar-bottom"><div className="user-mini"><div className="user-avatar">{(user.email || 'A').slice(0,1).toUpperCase()}</div><div><b>{user.email}</b><small>Administrateur</small></div><button className="icon-button logout" title="Déconnexion" onClick={async()=>{await signOut(auth);setMembers([]);}}><LogOut size={17}/></button></div><div className="sidebar-foot">Association des promoteurs<br/>d'eau conditionnée du Bénin</div></div></aside>
-    <main className="main-area"><header className="topbar"><div className="breadcrumb">Espace association <ChevronRight size={14}/> <b>Membres</b></div><div className="topbar-actions"><ThemeToggle theme={theme} toggleTheme={toggleTheme}/><div className="secure-pill"><span/> Espace sécurisé</div></div></header><section className="content"><div className="page-heading"><div><div className="eyebrow">VOTRE ASSOCIATION</div><h1>Gestion des membres</h1><p>Gérez les adhésions et éditez les cartes de membre.</p></div><button className="button primary" onClick={()=>setEditing({ ...emptyMember })}><Plus size={17}/> Ajouter un membre</button></div>
+    <main className="main-area"><header className="topbar"><div className="breadcrumb">Espace association <ChevronRight size={14}/> <b>Membres</b></div><div className="topbar-actions"><ThemeToggle theme={theme} toggleTheme={toggleTheme}/><div className="secure-pill"><span/> Espace sécurisé</div></div></header><section className="content"><div className="page-heading"><div><div className="eyebrow">VOTRE ASSOCIATION</div><h1>Gestion des membres</h1><p>Gérez les adhésions et éditez les cartes de membre.</p></div><div className="heading-actions"><button className="button outline" onClick={()=>setShowUserModal(true)}><UserRound size={16}/> Ajouter un utilisateur</button><button className="button primary" onClick={()=>setEditing({ ...emptyMember })}><Plus size={17}/> Ajouter un membre</button></div></div>
       <div className="stats-grid"><Stat icon={<UserRound/>} label="Total des membres" value={members.length} tone="mint"/><Stat icon={<Activity/>} label="Adhésions actives" value={activeCount} tone="green"/><Stat icon={<CalendarDays/>} label="À renouveler" value={inactiveCount} tone="amber"/></div>
       <section className="members-panel"><div className="panel-head"><div><h2>Annuaire des membres</h2><p>Retrouvez les informations et cartes de vos adhérents.</p></div><div className="table-tools"><div className="search-wrap"><Search size={16}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Rechercher un membre…"/></div><select value={filter} onChange={e=>setFilter(e.target.value)}><option>Tous</option><option>Actifs</option><option>À renouveler</option></select></div></div>{notice && <div className="notice" onClick={()=>setNotice('')}>{notice}<button><X size={14}/></button></div>}
-        <div className="table-wrap"><table><thead><tr><th>MEMBRE</th><th>ENTREPRISE</th><th>N° ADHÉRENT</th><th>STATUT</th><th>VALIDITÉ</th><th></th></tr></thead><tbody>{filtered.length === 0 ? <tr><td className="empty-state" colSpan="6">{members.length ? 'Aucun résultat pour cette recherche.' : 'Aucun membre pour le moment. Ajoutez votre premier adhérent.'}</td></tr> : filtered.map(m => { const valid = m.active && (!m.expires_on || m.expires_on >= today()); return <tr key={m.id}><td><div className="member-cell"><div className="member-avatar">{m.first_name[0]}{m.last_name[0]}</div><div><b>{m.first_name} {m.last_name}</b><small>{m.email || m.phone || '—'}</small></div></div></td><td>{m.company}</td><td className="mono">{m.membership_number}</td><td><span className={`badge ${valid ? 'badge-active' : 'badge-off'}`}><i/>{valid ? 'Actif' : 'À renouveler'}</span></td><td className="date-cell">{m.expires_on ? formatDate(m.expires_on) : 'Sans échéance'}</td><td><div className="row-actions"><button className="button outline small" onClick={()=>printCard(m)}><Printer size={14}/> Carte</button><button className="icon-button" title="Modifier" onClick={()=>editMember(m)}><ChevronRight size={17}/></button><button className="icon-button danger" title="Supprimer" onClick={()=>removeMember(m)}><Trash2 size={15}/></button></div></td></tr>})}</tbody></table></div><div className="table-foot">{filtered.length} membre{filtered.length>1?'s':''} affiché{filtered.length>1?'s':''}<span><ShieldCheck size={14}/> Les informations privées restent dans l'espace sécurisé.</span></div></section><div className="content-foot">APEC Bénin <span>·</span> Gestion des adhésions</div></section></main>{editing && <MemberModal member={editing} close={()=>setEditing(null)} save={saveMember}/>}</div>;
+        <div className="table-wrap"><table><thead><tr><th>MEMBRE</th><th>ENTREPRISE</th><th>N° ADHÉRENT</th><th>STATUT</th><th>VALIDITÉ</th><th></th></tr></thead><tbody>{filtered.length === 0 ? <tr><td className="empty-state" colSpan="6">{members.length ? 'Aucun résultat pour cette recherche.' : 'Aucun membre pour le moment. Ajoutez votre premier adhérent.'}</td></tr> : filtered.map(m => { const valid = m.active && (!m.expires_on || m.expires_on >= today()); return <tr key={m.id}><td><div className="member-cell"><div className="member-avatar">{m.first_name[0]}{m.last_name[0]}</div><div><b>{m.first_name} {m.last_name}</b><small>{m.email || m.phone || '—'}</small></div></div></td><td>{m.company}</td><td className="mono">{m.membership_number}</td><td><span className={`badge ${valid ? 'badge-active' : 'badge-off'}`}><i/>{valid ? 'Actif' : 'À renouveler'}</span></td><td className="date-cell">{m.expires_on ? formatDate(m.expires_on) : 'Sans échéance'}</td><td><div className="row-actions"><button className="button outline small" onClick={()=>printCard(m)}><Printer size={14}/> Carte</button><button className="icon-button" title="Modifier" onClick={()=>editMember(m)}><ChevronRight size={17}/></button><button className="icon-button danger" title="Supprimer" onClick={()=>removeMember(m)}><Trash2 size={15}/></button></div></td></tr>})}</tbody></table></div><div className="table-foot">{filtered.length} membre{filtered.length>1?'s':''} affiché{filtered.length>1?'s':''}<span><ShieldCheck size={14}/> Les informations privées restent dans l'espace sécurisé.</span></div></section><div className="content-foot">APEC Bénin <span>·</span> Gestion des adhésions</div></section></main>{editing && <MemberModal member={editing} close={()=>setEditing(null)} save={saveMember}/>} {showUserModal && <PlatformUserModal close={()=>setShowUserModal(false)} save={addPlatformUser} loadUsers={()=>request('/api/admin/users')} updateUser={updatePlatformUser}/>}</div>;
 }
 
 function GoogleMark() { return <svg className="google-mark" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5.1h6.7c3.9-3.6 6-8.8 6-15Z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.7-5.1c-1.8 1.2-4.1 2-6.8 2-5.2 0-9.6-3.5-11.2-8.2H5.9v5.2A20 20 0 0 0 24 44Z"/><path fill="#FBBC05" d="M12.8 27.8a12 12 0 0 1 0-7.6V15H5.9a20 20 0 0 0 0 18Z"/><path fill="#EA4335" d="M24 12.1c3 0 5.7 1 7.8 3.1l5.9-5.9C34.1 6 29.5 4 24 4A20 20 0 0 0 5.9 15l6.9 5.2c1.6-4.7 6-8.1 11.2-8.1Z"/></svg> }
 function Stat({icon,label,value,tone}) { return <div className="stat-card"><span className={`stat-icon ${tone}`}>{icon}</span><div><span>{label}</span><b>{value}</b></div><span className="stat-trend"><Check size={13}/></span></div> }
+function PlatformUserModal({ close, save, loadUsers, updateUser }) {
+  const [form, setForm] = useState({ display_name: '', email: '', auth_method: 'google' });
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+  useEffect(() => { loadUsers().then(setUsers).catch(err => setError(err.message)); }, []);
+  async function submit(e) {
+    e.preventDefault(); setSaving(true); setError('');
+    try { await save({ ...form, email: form.email.trim().toLowerCase() }); }
+    catch (err) { setError(err.message); }
+    finally { setSaving(false); }
+  }
+  async function toggleUser(item) {
+    setError('');
+    try {
+      await updateUser(item.id, !item.active);
+      setUsers(current => current.map(user => user.id === item.id ? { ...user, active: !item.active } : user));
+    } catch (err) { setError(err.message); }
+  }
+  return <div className="modal-backdrop" onMouseDown={e=>e.target===e.currentTarget&&close()}><section className="member-modal platform-user-modal"><div className="modal-heading"><div><span className="eyebrow">ACCES AU PORTAIL</span><h2>Utilisateurs</h2><p>Ajoutez ou desactivez les acces des responsables.</p></div><button className="icon-button" onClick={close}><X/></button></div><div className="platform-user-list">{users.length === 0 ? <p className="muted user-list-empty">Aucun autre utilisateur pour le moment.</p> : users.map(item => <div className="platform-user-row" key={item.id}><div><b>{item.display_name || item.email}</b><small>{item.email} - {item.auth_method === 'google' ? 'Google' : 'E-mail et mot de passe'}</small></div><button type="button" className={`button small ${item.active ? 'outline' : 'primary'}`} onClick={()=>toggleUser(item)}>{item.active ? 'Desactiver' : 'Reactiver'}</button></div>)}</div><form onSubmit={submit}><div className="eyebrow user-form-label">NOUVEL ACCES</div><div className="form-grid"><label>Nom complet<input value={form.display_name} onChange={e=>setForm({...form,display_name:e.target.value})} placeholder="Nom du responsable"/></label><label>Adresse e-mail<input type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} required placeholder="responsable@association.bj"/></label><label>Methode de connexion<select value={form.auth_method} onChange={e=>setForm({...form,auth_method:e.target.value})}><option value="google">Compte Google</option><option value="password">E-mail et mot de passe</option></select></label></div><div className="user-access-help">{form.auth_method === 'google' ? "Aucun mot de passe a definir. L'utilisateur choisira Continuer avec Google avec cette adresse." : "Un compte sera cree et un lien sera envoye a cette adresse pour choisir son mot de passe."}</div>{error && <div className="form-error">{error}</div>}<div className="modal-actions"><button type="button" className="button outline" onClick={close}>Fermer</button><button className="button primary" disabled={saving}>{saving ? 'Creation...' : "Autoriser l'utilisateur"}</button></div></form></section></div>;
+}
+
 function MemberModal({member,close,save}) {
   const [form,setForm] = useState({...emptyMember,...member}); const [error,setError] = useState(''); const [saving,setSaving] = useState(false);
   async function submit(e){e.preventDefault();setSaving(true);setError('');try{await save(form)}catch(err){setError(err.message)}finally{setSaving(false)}}
