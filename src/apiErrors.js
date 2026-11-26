@@ -5,6 +5,7 @@ const FIELD_LABELS = {
   last_name: 'Nom',
   company: 'Entreprise / marque',
   role: 'Fonction',
+  quality: 'Qualité',
   address: 'Adresse',
   commune: 'Département / Commune',
   membership_number: "Numéro d'adhérent",
